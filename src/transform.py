@@ -37,7 +37,7 @@ def transform_prices(raw_data):
             "coin_id": coin_id,
             "price_usd": item["price_usd"],
             "market_cap": item["market_cap"],
-            "volume_24h": item["volume_24h"],
+            "volume_24h": item["volume_24hr"],
             "price_change_pct": item["price_change_pct"],
         })
     return prices
