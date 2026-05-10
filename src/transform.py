@@ -6,8 +6,7 @@ COINS = {
         "cardano": {"symbol": "ADA", "name": "Cardano"},
     }
 
-def transform(raw_data):
-    now = datetime.now()
+def transform_date(now):
     date = {
         "captured_at": now,
         "hour": now.hour,
@@ -17,7 +16,9 @@ def transform(raw_data):
         "dayofweek": now.strftime("%A"),
         "weekend": now.weekday() >= 5
     }
+    return date
 
+def transform_coins(raw_data):
     coins = []
     for item in raw_data:
         coin_id = item["coin_id"]
@@ -26,7 +27,9 @@ def transform(raw_data):
             "symbol": COINS[coin_id]["symbol"],
             "name": COINS[coin_id]["name"],
         })
+    return coins
 
+def transform_prices(raw_data):
     prices = []
     for item in raw_data:
         coin_id = item["coin_id"]
@@ -37,5 +40,12 @@ def transform(raw_data):
             "volume_24h": item["volume_24h"],
             "price_change_pct": item["price_change_pct"],
         })
+    return prices
 
-    return {"coins": coins, "prices": prices, "date": date}
+def transform(raw_data):
+    now = datetime.now()
+    return {
+        "date": transform_date(now),
+        "coins": transform_coins(raw_data),
+        "prices": transform_prices(raw_data),
+    }
