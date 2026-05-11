@@ -1,12 +1,15 @@
 from sqlalchemy import insert, select
+from sqlalchemy.dialects.postgresql import insert
 from models import dim_date, dim_coins, fact_prices
 
 
 def load_dim_dates(conn, date):
-   conn.execute(insert(dim_date),date)
+    stmt = insert(dim_date).on_conflict_do_nothing(index_elements=['captured_at'])
+    conn.execute(stmt, date)
 
 def load_coins(conn, coins):
-    conn.execute(insert(dim_coins),coins)
+    stmt = insert(dim_coins).on_conflict_do_nothing(index_elements=['coingecko_id'])
+    conn.execute(stmt, coins)
 
 def load_fact_prices(conn, facts):
     results = conn.execute(select(dim_coins.c.coin_id, dim_coins.c.coingecko_id))
@@ -18,7 +21,8 @@ def load_fact_prices(conn, facts):
     for price in facts:
        price["coin_id"] = coin_map[price["coin_id"]]
        price["date_id"] = date_id
-    conn.execute(insert(fact_prices), facts)
+    stmt= insert(fact_prices).on_conflict_do_nothing(index_elements=['date_id', 'coin_id'])
+    conn.execute(stmt, facts)
 
 
 def load (engine, transformed_data):
